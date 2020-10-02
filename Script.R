@@ -55,5 +55,7 @@ ggplot(data = Prediction, aes(x = Date, y = sGARCH))+ # PLotting Series and GARC
   geom_line(aes(y = iGARCH), color = 'yellow')+
   geom_line(aes(y = eGARCH), color = 'green', lty = 'dotted')
   theme_minimal()
+  
+  # end
 
 
