@@ -54,11 +54,11 @@ iGARCHfit <- ugarchfit(iGARCHspec, data = Clean_DataSP500$Vol) # Integrated GARC
 eGARCHspec <- ugarchspec(variance.model = list(model = 'eGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
 eGARCHfit <- ugarchfit(eGARCHspec, data = Clean_DataSP500$Vol) # Exponential GARCH(1, 1) spec and fit 
 
-eGARCHspec <- ugarchspec(variance.model = list(model = 'gjrGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
-eGARCHfit <- ugarchfit(eGARCHspec, data = Clean_DataSP500$Vol) # GJR GARCH(1, 1) spec and fit 
+gjrGARCHspec <- ugarchspec(variance.model = list(model = 'gjrGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
+gjrGARCHfit <- ugarchfit(gjrGARCHspec, data = Clean_DataSP500$Vol) # GJR GARCH(1, 1) spec and fit 
 
-eGARCHspec <- ugarchspec(variance.model = list(model = 'tGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
-eGARCHfit <- ugarchfit(eGARCHspec, data = Clean_DataSP500$Vol) # Threshold GARCH(1, 1) spec and fit 
+tGARCHspec <- ugarchspec(variance.model = list(model = 'tGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
+tGARCHfit <- ugarchfit(tGARCHspec, data = Clean_DataSP500$Vol) # Threshold GARCH(1, 1) spec and fit 
 
 Prediction <- data.frame()[1 : 3974, ] # Grouping results in a new "prediction" data frame 
 
@@ -74,7 +74,9 @@ ggplot(data = Prediction, aes(x = Date, y = sGARCH))+ # PLotting Series and GARC
   geom_line(aes(y = Vol), color = 'navyblue')+ # and eGARCH(1, 1) estimates
   geom_line(color = 'red')+
   geom_line(aes(y = iGARCH), color = 'yellow')+ # iGRACH estimates
-  geom_line(aes(y = eGARCH), color = 'green', lty = 'dotted') 
+  geom_line(aes(y = eGARCH), color = 'green', lty = 'dotted')+
+  geom_line(aes(y = gjrGARCH), color = 'orange')+
+  geom_line(aes(y = tGARCH), color = 'black')+
   theme_minimal()
   
   # end
