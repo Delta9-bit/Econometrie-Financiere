@@ -54,11 +54,19 @@ iGARCHfit <- ugarchfit(iGARCHspec, data = Clean_DataSP500$Vol) # Integrated GARC
 eGARCHspec <- ugarchspec(variance.model = list(model = 'eGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
 eGARCHfit <- ugarchfit(eGARCHspec, data = Clean_DataSP500$Vol) # Exponential GARCH(1, 1) spec and fit 
 
+eGARCHspec <- ugarchspec(variance.model = list(model = 'gjrGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
+eGARCHfit <- ugarchfit(eGARCHspec, data = Clean_DataSP500$Vol) # GJR GARCH(1, 1) spec and fit 
+
+eGARCHspec <- ugarchspec(variance.model = list(model = 'tGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
+eGARCHfit <- ugarchfit(eGARCHspec, data = Clean_DataSP500$Vol) # Threshold GARCH(1, 1) spec and fit 
+
 Prediction <- data.frame()[1 : 3974, ] # Grouping results in a new "prediction" data frame 
 
 Prediction$sGARCH <- GARCHfit@fit$sigma
 Prediction$iGARCH <- iGARCHfit@fit$sigma
 Prediction$eGARCH <- eGARCHfit@fit$sigma
+Prediction$gjrGARCH <- gjrGARCHfit@fit$sigma
+Prediction$tGARCH <- tGARCHfit@fit$sigma
 Prediction$Date <- DataSP500$Date
 Prediction$Vol <- Clean_DataSP500$Vol
 
