@@ -1,6 +1,8 @@
 library(rugarch)
 library(readxl)
 library(ggplot2)
+library(PerformanceAnalytics)
+library(robustbase)
 
 # Setting Work Directory
 
@@ -22,6 +24,17 @@ DataSP500 <- DataSP500[-c(1), ] # Removing 1 row because of 1st difference
 
 DataSP500$R <- R 
 DataSP500$Vol <- R^2 # Computing Volatility
+
+DataSP500 <- as.ts(DataSP500) # Converting to TS format for Outliers Detection
+
+Clean_DataSP500 <- Return.clean(DataSP500, method = 'boudt') # Removing Outliers
+
+Clean_DataSP500 <- as.data.frame(Clean_DataSP500)
+DataSP500 <- as.data.frame(DataSP500) # Switching back to DFs (enabling ggplot2 to function)
+
+ggplot(Clean_DataSP500, aes(x = Date, y = R))+
+  geom_line(data = DataSP500, aes(x = Date, y = R), color = 'red')+
+  geom_line(color = 'navyblue')
 
 ggplot(data = DataSP500, aes(x = Date, y = R))+ # Plotting Returns
   geom_line(color = 'navyblue')+
