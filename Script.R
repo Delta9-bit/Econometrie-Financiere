@@ -46,27 +46,27 @@ ggplot(data = DataSP500, aes(x = Date, y = Vol))+ # Plotting Volatility
   theme_minimal()
 
 GARCHspec <- ugarchspec(variance.model = list(model = 'sGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
-GARCHfit <- ugarchfit(GARCHspec, data = DataSP500$Vol) # Standard GARCH(1, 1) spec and fit
+GARCHfit <- ugarchfit(GARCHspec, data = Clean_DataSP500$Vol) # Standard GARCH(1, 1) spec and fit
 
 iGARCHspec <- ugarchspec(variance.model = list(model = 'iGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
-iGARCHfit <- ugarchfit(iGARCHspec, data = DataSP500$Vol) # Integrated GARCH(1, 1) spec and fit 
+iGARCHfit <- ugarchfit(iGARCHspec, data = Clean_DataSP500$Vol) # Integrated GARCH(1, 1) spec and fit 
 
 eGARCHspec <- ugarchspec(variance.model = list(model = 'eGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
-eGARCHfit <- ugarchfit(eGARCHspec, data = DataSP500$Vol) # Exponential GARCH(1, 1) spec and fit 
+eGARCHfit <- ugarchfit(eGARCHspec, data = Clean_DataSP500$Vol) # Exponential GARCH(1, 1) spec and fit 
 
-Prediction <- data.frame()[1 : 3974, ] # Grouping results in a nex "prediction" data frame 
+Prediction <- data.frame()[1 : 3974, ] # Grouping results in a new "prediction" data frame 
 
 Prediction$sGARCH <- GARCHfit@fit$sigma
 Prediction$iGARCH <- iGARCHfit@fit$sigma
 Prediction$eGARCH <- eGARCHfit@fit$sigma
 Prediction$Date <- DataSP500$Date
-Prediction$Vol <- DataSP500$Vol
+Prediction$Vol <- Clean_DataSP500$Vol
 
 ggplot(data = Prediction, aes(x = Date, y = sGARCH))+ # PLotting Series and GARCH(1, 1) and iGARCH(1, 1) estimates
   geom_line(aes(y = Vol), color = 'navyblue')+ # and eGARCH(1, 1) estimates
   geom_line(color = 'red')+
-  geom_line(aes(y = iGARCH), color = 'yellow')+
-  geom_line(aes(y = eGARCH), color = 'green', lty = 'dotted')
+  geom_line(aes(y = iGARCH), color = 'yellow')+ # iGRACH estimates
+  geom_line(aes(y = eGARCH), color = 'green', lty = 'dotted') 
   theme_minimal()
   
   # end
