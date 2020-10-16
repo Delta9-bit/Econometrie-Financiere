@@ -56,3 +56,21 @@ GARCHfit
 persistence(GARCHfit)
 
 halflife(GARCHfit)
+
+estim <- 500
+h <- 100
+statmat <- matrix(nrow=h, ncol=1)
+
+for(i in 1:h){
+  data2 <- data[1:(estim-1+i),1]
+  GARCHfit = ugarchfit(data = data2, spec = GARCHspec)
+  forc =  ugarchforecast(GARCHfit, n.ahead=1)
+  statmat[i,1] <- sigma(forc)^2
+  # statmat[i,1] <- rbind(sigma(forc))
+}
+statmat
+
+# Writing the results to output file, change the output file name
+write(t(statmat),file="forecast_sGARCH.txt",ncolumn=1,append=FALSE)
+
+
