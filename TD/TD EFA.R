@@ -1,4 +1,4 @@
-setwd('/Users/lucasA/Desktop')
+setwd('/Users/lucasA/Desktop/Econométrie Financière/Econometrie-Financiere/TD')
 
 library(readxl)
 library(zoo)
@@ -7,6 +7,8 @@ library(FinTS)
 library(PerformanceAnalytics)
 library(ggplot2)
 library(DescTools)
+library(robustbase)
+library(rugarch)
 
 data <- zoo(read_excel('brent1.xlsx'))
 
@@ -39,3 +41,18 @@ yfit <- dnorm(xfit, mean = mean(data), sd = sd(data))
 yfit <- yfit * diff(h$mids[1:2]) * length(data) 
 lines(xfit, yfit, col = "red", lwd = 2)
 
+data <- Return.clean(data, method = 'boudt')
+
+h <- hist(data, col = 'navyblue')
+xfit <- seq(min(data), max(data), length = 40) 
+yfit <- dnorm(xfit, mean = mean(data), sd = sd(data)) 
+yfit <- yfit * diff(h$mids[1:2]) * length(data) 
+lines(xfit, yfit, col = "red", lwd = 2)
+
+GARCHspec <- ugarchspec(variance.model = list(model = 'sGARCH'), mean.model = list(armaOrder = c(0, 0), include.mean = TRUE), distribution.model = 'norm')
+GARCHfit <- ugarchfit(GARCHspec, data = data) # Standard GARCH(1, 1)
+GARCHfit
+
+persistence(GARCHfit)
+
+halflife(GARCHfit)
