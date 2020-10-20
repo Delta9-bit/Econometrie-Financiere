@@ -1,6 +1,8 @@
 library(rugarch)
 library(readxl)
 library(ggplot2)
+library(PerformanceAnalytics)
+library(robustbase)
 
 # Setting Work Directory
 
@@ -23,6 +25,17 @@ DataSP500 <- DataSP500[-c(1), ] # Removing 1 row because of 1st difference
 DataSP500$R <- R 
 DataSP500$Vol <- R^2 # Computing Volatility
 
+DataSP500 <- as.ts(DataSP500) # Converting to TS format for Outliers Detection
+
+Clean_DataSP500 <- Return.clean(DataSP500, method = 'boudt') # Removing Outliers
+
+Clean_DataSP500 <- as.data.frame(Clean_DataSP500)
+DataSP500 <- as.data.frame(DataSP500) # Switching back to DFs (enabling ggplot2 to function)
+
+ggplot(Clean_DataSP500, aes(x = Date, y = R))+
+  geom_line(data = DataSP500, aes(x = Date, y = R), color = 'red')+
+  geom_line(color = 'navyblue')
+
 ggplot(data = DataSP500, aes(x = Date, y = R))+ # Plotting Returns
   geom_line(color = 'navyblue')+
   geom_line(aes(y = Vol), color = 'red')+
@@ -33,27 +46,37 @@ ggplot(data = DataSP500, aes(x = Date, y = Vol))+ # Plotting Volatility
   theme_minimal()
 
 GARCHspec <- ugarchspec(variance.model = list(model = 'sGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
-GARCHfit <- ugarchfit(GARCHspec, data = DataSP500$Vol) # Standard GARCH(1, 1) spec and fit
+GARCHfit <- ugarchfit(GARCHspec, data = Clean_DataSP500$Vol) # Standard GARCH(1, 1) spec and fit
 
 iGARCHspec <- ugarchspec(variance.model = list(model = 'iGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
-iGARCHfit <- ugarchfit(iGARCHspec, data = DataSP500$Vol) # Integrated GARCH(1, 1) spec and fit 
+iGARCHfit <- ugarchfit(iGARCHspec, data = Clean_DataSP500$Vol) # Integrated GARCH(1, 1) spec and fit 
 
 eGARCHspec <- ugarchspec(variance.model = list(model = 'eGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
-eGARCHfit <- ugarchfit(eGARCHspec, data = DataSP500$Vol) # Exponential GARCH(1, 1) spec and fit 
+eGARCHfit <- ugarchfit(eGARCHspec, data = Clean_DataSP500$Vol) # Exponential GARCH(1, 1) spec and fit 
 
-Prediction <- data.frame()[1 : 3974, ] # Grouping results in a nex "prediction" data frame 
+gjrGARCHspec <- ugarchspec(variance.model = list(model = 'gjrGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
+gjrGARCHfit <- ugarchfit(gjrGARCHspec, data = Clean_DataSP500$Vol) # GJR GARCH(1, 1) spec and fit 
+
+tGARCHspec <- ugarchspec(variance.model = list(model = 'tGARCH', garchOrder = c(1, 1)), distribution.model = 'norm')
+tGARCHfit <- ugarchfit(tGARCHspec, data = Clean_DataSP500$Vol) # Threshold GARCH(1, 1) spec and fit 
+
+Prediction <- data.frame()[1 : 3974, ] # Grouping results in a new "prediction" data frame 
 
 Prediction$sGARCH <- GARCHfit@fit$sigma
 Prediction$iGARCH <- iGARCHfit@fit$sigma
 Prediction$eGARCH <- eGARCHfit@fit$sigma
+Prediction$gjrGARCH <- gjrGARCHfit@fit$sigma
+Prediction$tGARCH <- tGARCHfit@fit$sigma
 Prediction$Date <- DataSP500$Date
-Prediction$Vol <- DataSP500$Vol
+Prediction$Vol <- Clean_DataSP500$Vol
 
 ggplot(data = Prediction, aes(x = Date, y = sGARCH))+ # PLotting Series and GARCH(1, 1) and iGARCH(1, 1) estimates
   geom_line(aes(y = Vol), color = 'navyblue')+ # and eGARCH(1, 1) estimates
   geom_line(color = 'red')+
-  geom_line(aes(y = iGARCH), color = 'yellow')+
-  geom_line(aes(y = eGARCH), color = 'green', lty = 'dotted')
+  geom_line(aes(y = iGARCH), color = 'yellow')+ # iGRACH estimates
+  geom_line(aes(y = eGARCH), color = 'green', lty = 'dotted')+
+  geom_line(aes(y = gjrGARCH), color = 'orange')+
+  geom_line(aes(y = tGARCH), color = 'black')+
   theme_minimal()
   
   # end
