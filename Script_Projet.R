@@ -78,7 +78,7 @@ lines(xfit, yfit, col = 'red', lwd = 2)
 # GARCH models with norm and st distributions
 
 GARCHspec <- ugarchspec(variance.model = list(model = 'sGARCH', garchOrder = c(1, 1)), 
-                        mean.model = list(armaOrder = c(0, 0), include.mean = TRUE), distribution.model = 'norm')
+                      mean.model = list(armaOrder = c(0, 0), include.mean = TRUE), distribution.model = 'norm')
 GARCHspec_st <- ugarchspec(variance.model = list(model = 'sGARCH', garchOrder = c(1, 1)), 
                         mean.model = list(armaOrder = c(0, 0), include.mean = TRUE), distribution.model = 'std')
 GARCHfit <- ugarchfit(GARCHspec, data = data) # Standard GARCH(1, 1) spec and fit
@@ -108,12 +108,12 @@ gjrGARCHfit <- ugarchfit(gjrGARCHspec_st, data = data)
 tGARCHspec <- ugarchspec(variance.model = list(model = 'tGARCH', garchOrder = c(1, 1)),
                          mean.model = list(armaOrder = c(0, 0), include.mean = TRUE), distribution.model = 'norm')
 tGARCHspec_st <- ugarchspec(variance.model = list(model = 'tGARCH', garchOrder = c(1, 1)),
-                         mean.model = list(armaOrder = c(0, 0), include.mean = TRUE), distribution.model = 'std')
+                          mean.model = list(armaOrder = c(0, 0), include.mean = TRUE), distribution.model = 'std')
 tGARCHfit <- ugarchfit(tGARCHspec, data = data) # Threshold GARCH(1, 1) spec and fit 
 tGARCHfit <- ugarchfit(tGARCHspec_st, data = data)
 
 riskMetspec <- ugarchspec(variance.model=list(model = "iGARCH"),
-                          mean.model=list(armaOrder=c(0,0), include.mean=TRUE), fixed.pars=list(omega=0,alpha1=0.06,beta1=0.94))
+                        mean.model=list(armaOrder=c(0,0), include.mean=TRUE), fixed.pars=list(omega=0,alpha1=0.06,beta1=0.94))
 riskMetfit <- ugarchfit(riskMetspec, data = data)
 
 persistence(sGARCH_fit)
@@ -161,7 +161,6 @@ ggplot(data = data_test_df, aes(x = index))+
   geom_line(aes(y = data_test), color = 'navyblue')+
   geom_line(aes(y = VaR), color = 'red')+
   theme_minimal()
-
 
 
 
