@@ -9,6 +9,7 @@ library(ggplot2)
 library(DescTools)
 library(robustbase)
 library(rugarch)
+library(GAS)
 
 data <- zoo(read_excel('brent1.xlsx'))
 
@@ -57,8 +58,8 @@ persistence(GARCHfit)
 
 halflife(GARCHfit)
 
-estim <- 500
-h <- 100
+estim <- 1000 #nb jours 2015 - 2018
+h <- 260 #nb jours 2019
 statmat <- matrix(nrow=h, ncol=1)
 
 for(i in 1:h){
@@ -72,5 +73,38 @@ statmat
 
 # Writing the results to output file, change the output file name
 write(t(statmat),file="forecast_sGARCH.txt",ncolumn=1,append=FALSE)
+
+foremat <- matrix(nrow = h, ncol = 1)
+varmat <- matrix(nrow = h, ncol = 1)
+esmat <- matrix(nrow = h, ncol = 1)
+
+for(i in 1:h){
+  data2 <- data[1:(estim-1+i),1]
+  GARCHfit = ugarchfit(data = data2, spec = GARCHspec)
+  forc =  ugarchforecast(GARCHfit, n.ahead=1)
+  statmat[i,1] <- sigma(forc)^2
+  varmat[i, 1] <- qnorm(0.05) * sigma(forc)
+  esmat[i, 1] <- - dnorm(qnorm(0.05)/0.05) * sigma(forc)
+  # statmat[i,1] <- rbind(sigma(forc))
+}
+
+foremat
+varmat
+mean(varmat)
+esmat
+mean(esmat)
+
+write(t(foremat),file="Risk_forecast.txt",ncolumn=1,append=FALSE)
+write(t(foremat),file="VaR.txt",ncolumn=1,append=FALSE)
+write(t(esmat),file="Exp_Short.txt",ncolumn=1,append=FALSE)
+
+alpha = 0.05
+testdata <- data[c(1001 : 1260), ]
+test <- ts(testdata)
+var <- ts(varmat)
+backtest <- BacktestVaR(data = test, VaR = var, alpha = alpha)
+show(backtest$LRcc)
+
+
 
 
