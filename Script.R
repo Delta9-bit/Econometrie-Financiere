@@ -6,7 +6,7 @@ library(robustbase)
 
 # Setting Work Directory
 
-setwd ("/Users/lucasA/Desktop/Econométrie Financière/Econometrie-Financiere")
+setwd ("/Users/Lucas/Desktop/Cours/Econometrie-Financiere")
 
 DataSP500 <- read.csv("Data/SP500.CSV")[, c(1, 5, 6)] # Importing Data
 
